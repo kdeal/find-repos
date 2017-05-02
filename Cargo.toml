@@ -1,0 +1,6 @@
+[package]
+name = "repo"
+version = "0.1.0"
+authors = ["Kyle Deal <kdeal@kyledeal.com>"]
+
+[dependencies]
