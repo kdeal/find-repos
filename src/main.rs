@@ -1,8 +1,12 @@
 use std::path::Path;
 use std::fs;
+use std::env;
 
 fn main() {
-    let repo_root = "/Users/kyle/repos/".to_string();
+    let repo_root = match env::args().nth(1) {
+        Some(path) => path,
+        None => format!("{}/repos", env::home_dir().unwrap().to_str().unwrap()),
+    };
     let mut repo_paths: Vec<String> = vec![];
     let mut dirs_to_read: Vec<String> = vec![repo_root];
     loop {
