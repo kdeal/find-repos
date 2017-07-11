@@ -1,6 +1,5 @@
 use std::path::Path;
 use std::fs;
-use std::env;
 
 fn main() {
     let repo_root = "/Users/kyle/repos/".to_string();
@@ -36,5 +35,4 @@ fn main() {
     for path in repo_paths {
         println!("{}", path)
     }
-    println!("{}", env::args_os().nth(1).unwrap());
 }
