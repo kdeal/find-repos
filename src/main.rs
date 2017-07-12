@@ -12,13 +12,18 @@ fn main() {
     let mut dirs_to_read: Vec<String> = vec![repo_root.clone()];
     let repo_root = repo_root.as_str();
 
-    loop {
-        let paths = dirs_to_read.pop();
-        if paths.is_none() {
-            break;
+    while !dirs_to_read.is_empty() {
+        let path = dirs_to_read.pop().unwrap();
+        let paths = fs::read_dir(path);
+        if !paths.is_ok() {
+            continue;
         }
-        let paths = fs::read_dir(paths.unwrap()).expect("Failed to read directory");
-        for path in paths {
+
+        for path in paths.unwrap() {
+            if !path.is_ok() {
+                continue;
+            }
+
             let repo_path = path.unwrap();
             if repo_path.file_name() == git_dir {
                 let repo_path_path = repo_path.path();
@@ -27,6 +32,7 @@ fn main() {
                 println!("{}", striped.to_str().unwrap());
                 break;
             }
+
             let file_type = repo_path.file_type().unwrap();
             if file_type.is_dir() {
                 dirs_to_read.push(repo_path.path().into_os_string().into_string().unwrap());
