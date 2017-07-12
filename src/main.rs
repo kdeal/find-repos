@@ -7,8 +7,8 @@ fn main() {
         Some(path) => path,
         None => format!("{}/repos", env::home_dir().unwrap().to_str().unwrap()),
     };
-    let mut repo_paths: Vec<String> = vec![];
-    let mut dirs_to_read: Vec<String> = vec![repo_root];
+    let mut dirs_to_read: Vec<String> = vec![repo_root.clone()];
+    let repo_root = repo_root.as_str();
     loop {
         let paths = dirs_to_read.pop();
         if paths.is_none() {
@@ -22,9 +22,9 @@ fn main() {
             if file_name == ".git" {
                 let repo_path_path = repo_path.path();
                 let parent_path = repo_path_path.parent().unwrap();
-                let striped: &Path = parent_path.strip_prefix("/Users/kyle/repos/")
+                let striped: &Path = parent_path.strip_prefix(repo_root)
                     .unwrap();
-                repo_paths.push(String::from(striped.to_str().unwrap()));
+                println!("{}", striped.to_str().unwrap());
                 break;
             }
             let file_type = repo_path.file_type().unwrap();
@@ -34,9 +34,5 @@ fn main() {
                 );
             }
         }
-    }
-
-    for path in repo_paths {
-        println!("{}", path)
     }
 }
