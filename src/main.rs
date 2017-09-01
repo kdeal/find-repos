@@ -8,6 +8,7 @@ struct Options<'a> {
     full_path: bool,
     short_circuit: bool,
     base_path: &'a str,
+    filter: &'a str,
 }
 
 
@@ -21,11 +22,17 @@ fn check_dir(dir: String, options: &Options) -> io::Result<Vec<String>> {
         let repo_path = path.unwrap();
         if repo_path.file_name().eq(".git") {
             let repo_path_path = repo_path.path();
-            let mut parent_path = repo_path_path.parent().unwrap();
-            if !options.full_path {
-                parent_path = parent_path.strip_prefix(options.base_path).unwrap();
+            let parent_path = repo_path_path.parent().unwrap();
+            let short_path = parent_path.strip_prefix(options.base_path).unwrap();
+            if !short_path.to_str().unwrap().contains(options.filter) {
+                continue;
             }
-            println!("{}", parent_path.to_str().unwrap());
+
+            if options.full_path {
+                println!("{}", parent_path.to_str().unwrap());
+            } else {
+                println!("{}", short_path.to_str().unwrap());
+            }
             if options.short_circuit {
                 return Ok(vec![]);
             } else {
@@ -54,6 +61,11 @@ fn get_args<'a>() -> ArgMatches<'a> {
                  .help("If file path should be printed")
                  .long("full-path")
                  .short("p"))
+        .arg(Arg::with_name("filter")
+                .help("Filter the list by string")
+                .takes_value(true)
+                .long("filter")
+                .short("f"))
         .arg(Arg::with_name("no_short_circuit")
                  .help("If subdirectories of a git repo should be explored")
                  .long("full-search")
@@ -68,6 +80,10 @@ fn main() {
         full_path: args.is_present("full_path"),
         short_circuit: !args.is_present("no_short_circuit"),
         base_path: args.value_of("base_path").unwrap(),
+        filter: match args.value_of("filter") {
+            Some(filter) => filter,
+            None => "",
+        },
     };
 
     let mut dirs_to_read: Vec<String> = vec![String::from(options.base_path)];
