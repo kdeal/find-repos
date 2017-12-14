@@ -1,7 +1,8 @@
 [package]
 name = "find-repos"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Kyle Deal <kdeal@kyledeal.com>"]
 
 [dependencies]
 clap = "2"
+regex = "0.2"
