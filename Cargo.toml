@@ -6,3 +6,6 @@ authors = ["Kyle Deal <kdeal@kyledeal.com>"]
 [dependencies]
 clap = "2"
 regex = "0.2"
+
+[build-dependencies]
+clap = "2"

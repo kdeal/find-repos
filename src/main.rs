@@ -1,3 +1,4 @@
+#[macro_use]
 extern crate clap;
 extern crate regex;
 
@@ -7,7 +8,8 @@ use regex::Regex;
 use std::fs;
 use std::io;
 
-use clap::{App, Arg, ArgMatches};
+mod app;
+
 
 struct Options<'a> {
     full_path: bool,
@@ -15,7 +17,6 @@ struct Options<'a> {
     base_path: &'a str,
     filter: Regex,
 }
-
 
 fn check_dir(dir: String, options: &Options) -> io::Result<Vec<String>> {
     let mut dir_paths: Vec<String> = vec![];
@@ -52,34 +53,8 @@ fn check_dir(dir: String, options: &Options) -> io::Result<Vec<String>> {
     Ok(dir_paths)
 }
 
-
-fn get_args<'a>() -> ArgMatches<'a> {
-    App::new("find-repos")
-        .version("1.1")
-        .about("Find git repos")
-        .author("Kyle D. <kdeal@kyledeal.com>")
-        .arg(Arg::with_name("base_path")
-                 .default_value("./")
-                 .help("If file path should be printed"))
-        .arg(Arg::with_name("full_path")
-                 .help("If file path should be printed")
-                 .long("full-path")
-                 .short("p"))
-        .arg(Arg::with_name("filter")
-                .help("Filter the list by string")
-                .takes_value(true)
-                .long("filter")
-                .short("f"))
-        .arg(Arg::with_name("no_short_circuit")
-                 .help("If subdirectories of a git repo should be explored")
-                 .long("full-search")
-                 .short("s"))
-        .get_matches()
-}
-
-
 fn main() {
-    let args = get_args();
+    let args = app::app().get_matches();
     let regex = match args.value_of("filter") {
             Some(filter) => Regex::new(filter),
             None => Regex::new(r""),
