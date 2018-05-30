@@ -26,8 +26,8 @@ fn check_dir(dir: String, options: &Options) -> io::Result<Vec<String>> {
         }
 
         let repo_path = path.unwrap();
+        let repo_path_path = repo_path.path();
         if repo_path.file_name().eq(".git") {
-            let repo_path_path = repo_path.path();
             let parent_path = repo_path_path.parent().unwrap();
             let short_path = parent_path.strip_prefix(options.base_path).unwrap();
             if !options.filter.is_match(short_path.to_str().unwrap()) {
@@ -45,9 +45,20 @@ fn check_dir(dir: String, options: &Options) -> io::Result<Vec<String>> {
             }
         }
 
-        let file_type = repo_path.file_type().unwrap();
+        let mut file_type = repo_path.file_type().unwrap();
+        if file_type.is_symlink() {
+            let symlink_path = fs::read_link(&repo_path_path).unwrap();
+            let metadata_result = fs::symlink_metadata(&symlink_path);
+            if metadata_result.is_err() {
+                continue
+            }
+
+            let file_metadata = metadata_result.unwrap();
+            file_type = file_metadata.file_type();
+        }
+
         if file_type.is_dir() {
-            dir_paths.push(repo_path.path().into_os_string().into_string().unwrap());
+            dir_paths.push(repo_path_path.into_os_string().into_string().unwrap());
         }
     }
     Ok(dir_paths)
