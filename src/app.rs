@@ -1,11 +1,11 @@
-use clap::App;
-use clap::Arg;
+use clap::{App, Arg, AppSettings};
 
 pub fn app<'a>() -> App<'static, 'static> {
     App::new("find-repos")
         .version(crate_version!())
         .about("Find git repos")
         .author("Kyle D. <kdeal@kyledeal.com>")
+        .setting(AppSettings::ColoredHelp)
         .arg(Arg::with_name("base_path")
                  .default_value("./")
                  .help("If file path should be printed"))
