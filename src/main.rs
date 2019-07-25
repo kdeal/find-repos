@@ -2,14 +2,13 @@
 extern crate clap;
 extern crate regex;
 
-use std::error::Error;
-use std::process::exit;
 use regex::Regex;
+use std::error::Error;
 use std::fs;
 use std::io;
+use std::process::exit;
 
 mod app;
-
 
 struct Options<'a> {
     full_path: bool,
@@ -50,7 +49,7 @@ fn check_dir(dir: String, options: &Options) -> io::Result<Vec<String>> {
             let symlink_path = fs::read_link(&repo_path_path).unwrap();
             let metadata_result = fs::symlink_metadata(&symlink_path);
             if metadata_result.is_err() {
-                continue
+                continue;
             }
 
             let file_metadata = metadata_result.unwrap();
@@ -67,8 +66,8 @@ fn check_dir(dir: String, options: &Options) -> io::Result<Vec<String>> {
 fn main() {
     let args = app::app().get_matches();
     let regex = match args.value_of("filter") {
-            Some(filter) => Regex::new(filter),
-            None => Regex::new(r""),
+        Some(filter) => Regex::new(filter),
+        None => Regex::new(r""),
     };
     if let Err(err) = regex {
         eprintln!("{}", err.description());
