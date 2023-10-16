@@ -5,7 +5,7 @@ authors = ["Kyle Deal <kdeal@kyledeal.com>"]
 
 [dependencies]
 clap = "4.4.6"
-regex = "1.10.0"
+regex = "1.10.1"
 
 [build-dependencies]
 clap = "4.4.6"
