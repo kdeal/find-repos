@@ -1,14 +1,29 @@
-#[macro_use]
 extern crate clap;
 extern crate regex;
 
 use regex::Regex;
-use std::error::Error;
 use std::fs;
 use std::io;
 use std::process::exit;
 
-mod app;
+use clap::Parser;
+
+#[derive(Parser)]
+#[command(version, about, long_about = None)]
+struct Cli {
+    // If file path should be printed
+    #[arg(default_value = "./")]
+    base_path: String,
+    // If file path should be printed
+    #[arg(short = 'p', long)]
+    full_path: bool,
+    // Filter the list by string
+    #[arg(short, long)]
+    filter: Option<String>,
+    // If subdirectories of a git repo should be explored
+    #[arg(short = 's', long = "full-search")]
+    no_short_circuit: bool,
+}
 
 struct Options<'a> {
     full_path: bool,
@@ -64,21 +79,21 @@ fn check_dir(dir: String, options: &Options) -> io::Result<Vec<String>> {
 }
 
 fn main() {
-    let args = app::app().get_matches();
-    let regex = match args.value_of("filter") {
+    let args = Cli::parse();
+    let regex = match args.filter.as_deref() {
         Some(filter) => Regex::new(filter),
         None => Regex::new(r""),
     };
     if let Err(err) = regex {
-        eprintln!("{}", err.description());
+        eprintln!("{}", err);
         exit(1);
     }
     let regex = regex.unwrap();
 
     let options = Options {
-        full_path: args.is_present("full_path"),
-        short_circuit: !args.is_present("no_short_circuit"),
-        base_path: args.value_of("base_path").unwrap(),
+        full_path: args.full_path,
+        short_circuit: !args.no_short_circuit,
+        base_path: args.base_path.as_ref(),
         filter: regex,
     };
 
