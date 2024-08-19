@@ -4,8 +4,8 @@ version = "0.1.1"
 authors = ["Kyle Deal <kdeal@kyledeal.com>"]
 
 [dependencies]
-clap = { version = "4.5.13", features = ["derive"] }
+clap = { version = "4.5.16", features = ["derive"] }
 regex = "1.10.6"
 
 [build-dependencies]
-clap = "4.5.13"
+clap = "4.5.16"
